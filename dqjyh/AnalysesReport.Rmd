@@ -1,0 +1,286 @@
+---
+title: | 
+    <center> Do we really know anything about interpersonal motor synchrony in Autism? A systematic review and meta-analysis </center>
+    <center> ANALYSES REPORT </center>
+author: "Laura Carnevali, Irene Valori, Giorgia Mason, Gianmarco Altoè, Teresa Farroni"
+date: ""
+output:
+  pdf_document: 
+    toc: yes
+    toc_depth: 5
+    latex_engine: lualatex
+  html_document: 
+    toc: yes
+    toc_depth: 5
+  word_document: default
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,  warning=FALSE, message=FALSE, fig.align="center")
+
+remove(list = ls())
+
+library(readr)
+library(PRISMA2020)
+library(metafor)
+library(tidyr)
+library(kableExtra)
+library(MAd)
+library(dplyr)
+```
+
+
+\newpage
+
+# Prisma flow diagram
+```{r}
+flowd <- PRISMA_flowdiagram(PRISMA_data(read.csv("prisma.csv")),
+                fontsize = 12.8,
+                interactive = FALSE,
+                previous = FALSE,
+                other = TRUE);
+flowd
+# PRISMA_save(flowd,
+#             filename = "PRISMA2020_flowdiagram.pdf",
+#             filetype = "PDF",
+#             overwrite = TRUE);
+```
+
+
+```{r}
+df <- read_csv("df.csv")
+```
+
+\newpage 
+
+# Effect sizes
+To calculate the Hedge’s g, we used the ```metafor::escalc``` (Viechtbauer, 2010).
+Then, ```MAd::agg``` was used to compute an aggregated effect size for each study (Del Re & Hoyt, 2014). Since correlation among outcomes was unknown, we considered r =.5 to be the most plausible (reported in the paper and here). See Supplementary Materials for r =.7 and r =.9.
+
+Deacriptives of the included studies can be found in *Table 1*. Note that Comparison group has been used as $X_1$ and Autistic group as $X_2$, therefore positive Hedge's *g* are in favour of TD, while lower are in favour of ASD.
+
+```{r}
+df <- escalc(measure="SMD",
+       m1i=C_Mean, 
+       m2i=ASD_Mean, 
+       sd1i=C_Sd, 
+       sd2i=ASD_Sd, 
+       n1i=c_n, 
+       n2i=asd_n,
+       data=df, 
+       drop00=TRUE, 
+       vtype="AV", #computes the sampling variances with the usual large-sample approximation but plugging the sample-size weighted average of the Hedges' g values into the equation
+       var.names=c("yi","vi","SMD"), add.measure=TRUE,
+       append=TRUE, replace=TRUE)
+```
+
+
+```{r}
+df_agg<-MAd::agg(data=df, id=id, es=yi, var=vi, method = 'BHHR', cor = .50)  # change .50 to .70 or .90 to run analyses with different hypothesized correlation among outcomes 
+```
+
+
+```{r}
+df_info<-read.csv("df_info.csv")
+info<- Reduce(function(x,y) merge(x,y,by="id",all=TRUE) ,list(df_agg,df_info))
+info<-info[,c("id","authors","country",
+              "c_n","c_m_f_ratio","c_age_range","c_age_m","c_age_sd",
+              "asd_n","asd_m_f_ratio","asd_age_range","asd_age_m","asd_age_sd",
+              "synch_type","es", "var")]
+df_agg<-info[,c(1,2,14,15,16)]
+
+names(info)[names(info) == "id"] <-  "ID"
+names(info)[names(info) == "authors"] <-  "Authors" 
+names(info)[names(info) == "country"] <-  "Country"
+names(info)[names(info) == "synch_type"] <-  "Type of Synchrony"
+names(info)[names(info) == "c_n"] <-  "N"
+names(info)[names(info) == "c_m_f_ratio"] <-  "M/F ratio" #td
+names(info)[names(info) == "c_age_range"] <-  "range" #td
+names(info)[names(info) == "c_age_m"] <-  "mean" #td
+names(info)[names(info) == "c_age_sd"] <-  "sd" #td
+names(info)[names(info) == "asd_n"] <-  "N" #asd
+names(info)[names(info) == "asd_m_f_ratio"] <-  "M/F ratio" #asd
+names(info)[names(info) == "asd_age_range"] <-  "range" #asd
+names(info)[names(info) == "asd_age_m"] <-  "mean" #asd
+names(info)[names(info) == "asd_age_sd"] <-  "sd" #asd
+names(info)[names(info) == "es"] <-  "Hedge's g"
+
+kbl(info, digits = 2, caption = "Descriptives of the studies included") %>%
+  kable_paper(position = "center", font_size = 12, latex_options = "scale_down") %>%
+  add_header_above(c(" "= 3, " " = 2, "Age" = 3, " " = 2, "Age" = 3, " " = 3))%>%
+  add_header_above(c(" " = 3, "Comparison Group" = 5, "Autistic Group" = 5, " " = 3)) %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
+   
+```
+
+
+Please note that when asynchrony measures were collected (i.e. Fulceri et al, 2018; Yoo et al., 2018) we used the *negative of the absolute value*, such that the lower the value is, the lower the asynchrony. For example, Yoo et al. state that their measure of asynchrony consists in the difference between the onset timing of tapping and the onset timing of cueing. This means that the closer the value is to 0, the highest the synchrony, while positive and negative values would both reflect asynchrony. In order to have a measure of synchrony, we therefore took the absolute values and reversed them to negative. 
+
+Similarly, when reaction times were collected (Fulceri et al., 2018; Kruppa et al., 2021), we took their negatives as higher values would otherwise reflect asynchrony rather than synchrony. In fact, Fulceri et al., specify that their measure of reaction times consists in the difference, in milliseconds, between the Child Start Time and the Experimenter Start Time; therefore the lower the value, the highest the synchrony. 
+
+\newpage 
+
+
+# Meta-analysis
+
+## Models
+
+```{r}
+m.random <- rma(yi=es, vi=var, data=df_agg, method="REML")
+summary(m.random)
+```
+
+```{r}
+#fit moderation model (type of synchrony)
+moderation.random <- rma(yi=es, vi=var, mods = ~ synch_type, data=df_agg, method="REML")
+summary(moderation.random)
+```
+
+## Forest plot
+
+```{r}
+forest(m.random, # combined effect size
+       annotate=TRUE,
+       df_agg$var, # variance of the composite hp .5
+       showweights=T,
+       header=T,
+       slab=df_agg$authors,
+       ilab=df_agg$synch_type,
+       ilab.xpos = -5,
+       ilab.pos = 4, 
+       cex=.75,
+       xlim=c(-10,11),
+       xlab="Hedge's g", 
+       addpred = TRUE)
+text(-3.8, 15, "SynchType", cex=.75, font=2)
+
+### add text with Q-value, dfs, p-value, and I^2 statistic
+text(-10, -1.8, pos=4, cex=0.70, 
+     bquote(paste("(Q = ", .(formatC(m.random$QE, digits=2, format="f")),
+     ", df = ", .(m.random$k - m.random$p),
+     ", p < .0001", "; ", 
+     I^2, " = ", .(formatC(m.random$I2, digits=2, format="f")), "%; ", 
+     tau, " = ", .(formatC(sqrt(m.random$tau2), digits=2, format="f")) , ")" )))
+```
+
+
+## Prediction interval
+```{r}
+predict(m.random)
+
+#metafor::predict.rma(m.random)
+```
+
+```{r}
+# kbl((predict(m.random)), digits = 3) %>%
+#   kable_paper(position = "float_left", font_size = 12) %>%
+#   add_header_above(c(" "= 3, "Coinfidence interval" = 2, "Prediction interval" = 2))
+```
+
+
+
+## Funnel plot
+
+```{r}
+library(metafor)
+### carry out trim-and-fill analysis
+taf<-trimfill(m.random, main="", 
+                ma.fixed = FALSE, 
+              fixed = FALSE, 
+              random = TRUE, 
+              label=TRUE)
+
+### draw funnel plot with missing studies filled in
+funnel(taf, legend=TRUE,xlab="Hedge's g")
+
+summary(trimfill(m.random))
+
+# funnel(trimfill(m.random, random = TRUE), legend=TRUE,xlab="Hedge's g")
+
+predict(trimfill(m.random))
+
+```
+
+
+## Sensitivity analysis
+
+### Leave-One-Out
+
+```{r}
+sens.random<-as.data.frame(leave1out(m.random))
+
+sens.random<-data.frame(df_agg$authors, format(round(sens.random[,],2),nsmal=2))
+sens.random$CI<-paste0("[",sens.random$ci.lb,";",sens.random$ci.ub,"]")
+sens.random$tau<-sqrt(as.numeric(sens.random$tau2))
+sens.random$tau2<-NULL
+sens.random<-sens.random[,c(1:2,10,13,12)]
+sens.random[,1]<-as.character(sens.random[,1])
+names(sens.random)[names(sens.random) == "df_agg.authors"] <- "Authors"
+names(sens.random)[names(sens.random) == "estimate"] <- "Estimate"
+
+
+
+# Compute prediction intervals using leave-one-out method
+
+PI.random <- data.frame(Authors = character(), 
+                            #CI = character(),  
+                            PI = character())
+
+for (j in 1:nrow(df_agg)) {
+    df_agg_l1o <- df_agg[-j, ]  # Remove one study from the dataset
+    
+    m.leave1out.random <- rma(yi = es, vi = var, data = df_agg_l1o, method = "REML")  # Run model
+    
+    predicted <- predict(m.leave1out.random, interval = "prediction")  # Compute prediction interval
+    
+    # conf_lb<-round(predicted$ci.lb, digits = 2)
+    # conf_ub<-round(predicted$ci.ub, digits = 2)
+    pred_lb<-round(predicted$pi.lb, digits = 2)
+    pred_ub<-round(predicted$pi.ub, digits = 2)
+  
+    
+    # Create a new row with results
+    new_row <- data.frame(Authors = df_agg$authors[j], 
+                          #CI = paste0("[",conf_lb,";",conf_ub,"]"), 
+                          PI = paste0("[",pred_lb,";",pred_ub,"]"))
+    
+    # Bind the new row to results_table
+    PI.random <- rbind(PI.random, new_row)
+}
+
+sens.random<-merge(sens.random, PI.random, by="Authors", all=TRUE)
+
+kbl(sens.random, digits = 2, caption = "Leave-one-out sensitivity analysis") %>%
+  kable_paper() #latex_options = "scale_down"
+```
+
+
+
+
+### Cook's distance
+
+```{r}
+dinf<-influence(m.random)
+highest<-max(dinf$inf$cook.d)
+plot(dinf$inf$cook.d, ylab = "Cook's distance", xlab = "ID", col=ifelse(dinf$inf$cook.d==highest, "red", "black"), pch=ifelse(dinf$inf$cook.d==highest, 19, 1), type = "b")
+axis(1, at=dinf$inf$slab, labels=dinf$inf$slab)
+```
+
+# Overview of the studies included in the systematic review
+
+```{r}
+overview <- readxl::read_excel("./overview.xlsx")
+kbl(overview, caption = "Overview of the studies included in the systematic review") %>%
+  kable_paper(position = "center", font_size = 9, latex_options = "scale_down") %>% # full_width = TRUE, , latex_options = "scale_down"
+  column_spec(1, width = "2cm") %>%
+  column_spec(2, width = "5cm") %>%
+  column_spec(3, width = "4cm") %>%
+  column_spec(4, width = "1.5cm") %>%
+  column_spec(5, width = "1.5cm") %>%
+  column_spec(6, width = "8cm") 
+
+```
+
+

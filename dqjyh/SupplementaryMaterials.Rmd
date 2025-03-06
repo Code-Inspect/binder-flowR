@@ -1,0 +1,691 @@
+---
+title: | 
+        <center> SUPPLEMENTARY MATERIALS </center>
+author:  ""
+output:
+  pdf_document: 
+    toc: yes
+    toc_depth: 5
+    latex_engine: lualatex
+  html_document: 
+    toc: yes
+    toc_depth: 5
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+remove(list = ls())
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+library(readr)
+library(metafor)
+library(tidyr)
+library(kableExtra)
+library(MAd)
+library(dplyr)
+```
+
+\newpage
+
+```{r}
+df <- read_csv("df.csv")
+df_info<-read.csv("df_info.csv")
+
+# Effect sizes
+#Note: TD group has been used as $X_1$ and ASD group as $X_2$
+
+df <- escalc(measure="SMD",
+       m1i=C_Mean, 
+       m2i=ASD_Mean, 
+       sd1i=C_Sd, 
+       sd2i=ASD_Sd, 
+       n1i=c_n, 
+       n2i=asd_n,
+       data=df, 
+       drop00=TRUE, 
+       vtype="AV", #computes the sampling variances with the usual large-sample approximation but plugging the sample-size weighted average of the Hedges' g values into the equation
+       var.names=c("yi","vi","SMD"), add.measure=TRUE,
+       append=TRUE, replace=TRUE)
+```
+
+# Meta-analyses with r = .30
+
+```{r}
+df_agg<-MAd::agg(data=df, id=id, es=yi, var=vi, method = 'BHHR', cor = .30) 
+```
+
+## Dataset
+
+Effect sizes (Hedge's *g*) and varinaces for each of the included studies, with *r* = .30
+
+```{r}
+names(df_info)[names(df_info) == "Authors"] <-  "authors" 
+names(df_info)[names(df_info) == "es"] <-  "Hedge's g" 
+df_agg<-merge.data.frame(df_info[,c(1,2)], df_agg, by="id")
+```
+
+```{r}
+kbl(df_agg, digits = 2, col.names = c("ID", "Authors", "Hedge's g", "Var")) %>%
+  kable_paper() %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
+```
+
+
+## Descriptive statistics
+
+```{r}
+info<- Reduce(function(x,y) merge(x,y,by="id",all=TRUE) ,list(df_agg[,-2],df_info))
+info<-info[,c("id","authors","country",
+              "c_n","c_m_f_ratio","c_age_range","c_age_m","c_age_sd",
+              "asd_n","asd_m_f_ratio","asd_age_range","asd_age_m","asd_age_sd",
+              "synch_type","es", "var")]
+df_agg<-info[,c(1,2,14,15,16)]
+
+names(info)[names(info) == "id"] <-  "ID"
+names(info)[names(info) == "authors"] <-  "Authors"
+names(info)[names(info) == "country"] <-  "Country"
+names(info)[names(info) == "synch_type"] <-  "Type of Synchrony"
+names(info)[names(info) == "c_n"] <-  "N"
+names(info)[names(info) == "c_m_f_ratio"] <-  "M/F ratio" #td
+names(info)[names(info) == "c_age_range"] <-  "range" #td
+names(info)[names(info) == "c_age_m"] <-  "mean" #td
+names(info)[names(info) == "c_age_sd"] <-  "sd" #td
+names(info)[names(info) == "asd_n"] <-  "N" #asd
+names(info)[names(info) == "asd_m_f_ratio"] <-  "M/F ratio" #asd
+names(info)[names(info) == "asd_age_range"] <-  "range" #asd
+names(info)[names(info) == "asd_age_m"] <-  "mean" #asd
+names(info)[names(info) == "asd_age_sd"] <-  "sd" #asd
+names(info)[names(info) == "es"] <-  "Hedge's g" 
+```
+
+ 
+```{r}
+kbl(info, digits = 2) %>%
+  kable_paper() %>%
+  add_header_above(c(" "= 3, " " = 2, "Age" = 3, " " = 2, "Age" = 3, " " = 3)) %>%
+  add_header_above(c(" " = 3, "TD Group" = 5, "ASD Group" = 5, " " = 3)) %>%
+  kableExtra::kable_styling(latex_options="scale_down")  %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
+```
+
+
+## Random-effects meta-analysis
+
+### Models
+
+```{r, echo=TRUE}
+m.random <- rma(yi=es, vi=var, data=df_agg, method="REML")
+RE.results <- summary(m.random)
+print(RE.results)
+```
+
+ 
+```{r, echo=TRUE}
+#fit moderation model (type of synchrony)
+moderation.random <- rma(yi=es, vi=var, mods = ~ synch_type, data=df_agg, method="REML")
+summary(moderation.random)
+```
+
+### Forest plot
+
+Dotted line is the prediction interval
+
+```{r}
+forest(m.random, # combined effect size
+       annotate=TRUE,
+       df_agg$var, # variance of the composite hp .5
+       showweights=T,
+       header=T,
+       slab=df_agg$authors,
+       ilab=df_agg$synch_type,
+       ilab.xpos = -5,
+       ilab.pos = 4, 
+       cex=.75,
+       xlim=c(-10,11),
+       xlab="Hedge's g", 
+       addpred = TRUE)
+text(-3.8, 15, "SynchType", cex=.75, font=2)
+
+### add text with Q-value, dfs, p-value, and I^2 statistic
+text(-10, -1.8, pos=4, cex=0.70, 
+     bquote(paste("(Q = ", .(formatC(m.random$QE, digits=2, format="f")),
+     ", df = ", .(m.random$k - m.random$p),
+     ", p < .0001", "; ", 
+     I^2, " = ", .(formatC(m.random$I2, digits=2, format="f")), "%; ", 
+     tau, " = ", .(formatC(sqrt(m.random$tau2), digits=2, format="f")) , ")" )))
+```
+
+### Prediction interval
+
+```{r}
+predict(m.random)
+
+#metafor::predict.rma(m.random)
+```
+
+### Funnel plot (trim-and-fill method)
+
+```{r, fig.align="center"}
+### carry out trim-and-fill analysis
+taf<-trimfill(m.random,main="", 
+                ma.fixed = FALSE, fixed = FALSE, random = TRUE, label=F)
+
+### draw funnel plot with missing studies filled in
+funnel(taf, legend=TRUE, xlab="Hedge's g")
+```
+
+### Model corrected for publication bias (trim-and-fill method)
+
+```{r}
+summary(trimfill(m.random))
+```
+
+
+### Sensitivity analyses
+
+#### Leave-One-Out
+
+```{r}
+sens.random<-as.data.frame(leave1out(m.random))
+
+sens.random<-data.frame(df_agg$authors, format(round(sens.random[,],2),nsmal=2))
+sens.random$CI<-paste0("[",sens.random$ci.lb,";",sens.random$ci.ub,"]")
+sens.random$tau<-sqrt(as.numeric(sens.random$tau2))
+sens.random$tau2<-NULL
+sens.random<-sens.random[,c(1:2,10,13,12)]
+sens.random[,1]<-as.character(sens.random[,1])
+names(sens.random)[names(sens.random) == "df_agg.authors"] <- "Authors"
+names(sens.random)[names(sens.random) == "estimate"] <- "Estimate"
+
+
+
+# Compute prediction intervals using leave-one-out method
+
+PI.random <- data.frame(Authors = character(), 
+                            #CI = character(),  
+                            PI = character())
+
+for (j in 1:nrow(df_agg)) {
+    df_agg_l1o <- df_agg[-j, ]  # Remove one study from the dataset
+    
+    m.leave1out.random <- rma(yi = es, vi = var, data = df_agg_l1o, method = "REML")  # Run model
+    
+    predicted <- predict(m.leave1out.random, interval = "prediction")  # Compute prediction interval
+    
+    # conf_lb<-round(predicted$ci.lb, digits = 2)
+    # conf_ub<-round(predicted$ci.ub, digits = 2)
+    pred_lb<-round(predicted$pi.lb, digits = 2)
+    pred_ub<-round(predicted$pi.ub, digits = 2)
+  
+    
+    # Create a new row with results
+    new_row <- data.frame(Authors = df_agg$authors[j], 
+                          #CI = paste0("[",conf_lb,";",conf_ub,"]"), 
+                          PI = paste0("[",pred_lb,";",pred_ub,"]"))
+    
+    # Bind the new row to results_table
+    PI.random <- rbind(PI.random, new_row)
+}
+
+sens.random<-merge(sens.random, PI.random, by="Authors", all=TRUE)
+
+kbl(sens.random, digits = 2) %>%
+  kable_paper()  %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
+
+```
+
+#### Cook's distance
+
+```{r, fig.align="center"}
+dinf<-influence(m.random)
+highest<-max(dinf$inf$cook.d)
+plot(dinf$inf$cook.d, ylab = "Cook's distance", xlab = "ID", col=ifelse(dinf$inf$cook.d==highest, "red", "black"), pch=ifelse(dinf$inf$cook.d==highest, 19, 1), type = "b")
+axis(1, at=dinf$inf$slab, labels=dinf$inf$slab)
+```
+
+Note that study IDs follow alphabetical order of included studies and their specifications reported in the descriptive statistic's table
+
+```{r}
+ES_3 <- predict(m.random)$pred
+I2_3 <- m.random$I2
+tau_3 <- sqrt(m.random$tau2)
+CI_3 <- paste0("[",round((predict(m.random)$ci.lb), digits = 2),
+               ";",round((predict(m.random)$ci.ub), digits = 2),"]")
+PI_3 <- paste0("[",round((predict(m.random)$pi.lb), digits = 2),
+               ";",round((predict(m.random)$pi.ub), digits = 2),"]")
+```
+
+\newpage
+
+# Meta-analyses with r = .50
+
+```{r}
+df_agg<-MAd::agg(data=df, id=id, es=yi, var=vi, method = 'BHHR', cor = .50) 
+```
+
+## Dataset
+
+Effect sizes (Hedge's *g*) and varinaces for each of the included studies, with *r* = .50
+
+```{r}
+names(df_info)[names(df_info) == "Authors"] <-  "authors" 
+df_agg<-merge.data.frame(df_info[,c(1,2)], df_agg, by="id")
+```
+
+```{r}
+kbl(df_agg, digits = 2, col.names = c("ID", "Authors", "Hedge's g", "Var")) %>%
+  kable_paper() %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
+```
+
+
+## Descriptive statistics
+
+```{r}
+info<- Reduce(function(x,y) merge(x,y,by="id",all=TRUE) ,list(df_agg[,-2],df_info))
+info<-info[,c("id","authors","country",
+              "c_n","c_m_f_ratio","c_age_range","c_age_m","c_age_sd",
+              "asd_n","asd_m_f_ratio","asd_age_range","asd_age_m","asd_age_sd",
+              "synch_type","es", "var")]
+df_agg<-info[,c(1,2,14,15,16)]
+
+names(info)[names(info) == "id"] <-  "ID"
+names(info)[names(info) == "authors"] <-  "Authors"
+names(info)[names(info) == "country"] <-  "Country"
+names(info)[names(info) == "synch_type"] <-  "Type of Synchrony"
+names(info)[names(info) == "c_n"] <-  "N"
+names(info)[names(info) == "c_m_f_ratio"] <-  "M/F ratio" #td
+names(info)[names(info) == "c_age_range"] <-  "range" #td
+names(info)[names(info) == "c_age_m"] <-  "mean" #td
+names(info)[names(info) == "c_age_sd"] <-  "sd" #td
+names(info)[names(info) == "asd_n"] <-  "N" #asd
+names(info)[names(info) == "asd_m_f_ratio"] <-  "M/F ratio" #asd
+names(info)[names(info) == "asd_age_range"] <-  "range" #asd
+names(info)[names(info) == "asd_age_m"] <-  "mean" #asd
+names(info)[names(info) == "asd_age_sd"] <-  "sd" #asd
+names(info)[names(info) == "es"] <-  "Hedge's g" 
+```
+
+ 
+```{r}
+kbl(info, digits = 2) %>%
+  kable_paper() %>%
+  add_header_above(c(" "= 3, " " = 2, "Age" = 3, " " = 2, "Age" = 3, " " = 3)) %>%
+  add_header_above(c(" " = 3, "TD Group" = 5, "ASD Group" = 5, " " = 3)) %>%
+  kableExtra::kable_styling(latex_options="scale_down")  %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
+```
+
+
+
+## Random-effects meta-analysis
+
+
+### Models
+
+```{r, echo=TRUE}
+m.random <- rma(yi=es, vi=var, data=df_agg, method="REML")
+RE.results <- summary(m.random)
+print(RE.results)
+```
+
+ 
+```{r, echo=TRUE}
+#fit moderation model (type of synchrony)
+moderation.random <- rma(yi=es, vi=var, mods = ~ synch_type, data=df_agg, method="REML")
+summary(moderation.random)
+```
+
+### Forest plot
+
+Dotted line is the prediction interval
+
+```{r}
+forest(m.random, # combined effect size
+       annotate=TRUE,
+       df_agg$var, # variance of the composite hp .5
+       showweights=T,
+       header=T,
+       slab=df_agg$authors,
+       ilab=df_agg$synch_type,
+       ilab.xpos = -5,
+       ilab.pos = 4, 
+       cex=.75,
+       xlim=c(-10,11),
+       xlab="Hedge's g", 
+       addpred = TRUE)
+text(-3.8, 15, "SynchType", cex=.75, font=2)
+
+### add text with Q-value, dfs, p-value, and I^2 statistic
+text(-10, -1.8, pos=4, cex=0.70, 
+     bquote(paste("(Q = ", .(formatC(m.random$QE, digits=2, format="f")),
+     ", df = ", .(m.random$k - m.random$p),
+     ", p < .0001", "; ", 
+     I^2, " = ", .(formatC(m.random$I2, digits=2, format="f")), "%; ", 
+     tau, " = ", .(formatC(sqrt(m.random$tau2), digits=2, format="f")) , ")" )))
+```
+### Prediction interval
+
+```{r}
+predict(m.random)
+
+#metafor::predict.rma(m.random)
+```
+
+### Funnel plot (trim-and-fill method)
+
+```{r, fig.align="center"}
+### carry out trim-and-fill analysis
+taf<-trimfill(m.random,main="", 
+                ma.fixed = FALSE, fixed = FALSE, random = TRUE, label=F)
+
+### draw funnel plot with missing studies filled in
+funnel(taf, legend=TRUE, xlab="Hedge's g")
+```
+
+### Model corrected for publication bias (trim-and-fill method)
+
+```{r}
+summary(trimfill(m.random))
+```
+
+
+### Sensitivity analyses
+
+#### Leave-One-Out
+
+```{r}
+sens.random<-as.data.frame(leave1out(m.random))
+
+sens.random<-data.frame(df_agg$authors, format(round(sens.random[,],2),nsmal=2))
+sens.random$CI<-paste0("[",sens.random$ci.lb,";",sens.random$ci.ub,"]")
+sens.random$tau<-sqrt(as.numeric(sens.random$tau2))
+sens.random$tau2<-NULL
+sens.random<-sens.random[,c(1:2,10,13,12)]
+sens.random[,1]<-as.character(sens.random[,1])
+names(sens.random)[names(sens.random) == "df_agg.authors"] <- "Authors"
+names(sens.random)[names(sens.random) == "estimate"] <- "Estimate"
+
+
+
+# Compute prediction intervals using leave-one-out method
+
+PI.random <- data.frame(Authors = character(), 
+                            #CI = character(),  
+                            PI = character())
+
+for (j in 1:nrow(df_agg)) {
+    df_agg_l1o <- df_agg[-j, ]  # Remove one study from the dataset
+    
+    m.leave1out.random <- rma(yi = es, vi = var, data = df_agg_l1o, method = "REML")  # Run model
+    
+    predicted <- predict(m.leave1out.random, interval = "prediction")  # Compute prediction interval
+    
+    # conf_lb<-round(predicted$ci.lb, digits = 2)
+    # conf_ub<-round(predicted$ci.ub, digits = 2)
+    pred_lb<-round(predicted$pi.lb, digits = 2)
+    pred_ub<-round(predicted$pi.ub, digits = 2)
+  
+    
+    # Create a new row with results
+    new_row <- data.frame(Authors = df_agg$authors[j], 
+                          #CI = paste0("[",conf_lb,";",conf_ub,"]"), 
+                          PI = paste0("[",pred_lb,";",pred_ub,"]"))
+    
+    # Bind the new row to results_table
+    PI.random <- rbind(PI.random, new_row)
+}
+
+sens.random<-merge(sens.random, PI.random, by="Authors", all=TRUE)
+
+kbl(sens.random, digits = 2) %>%
+  kable_paper()  %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
+
+```
+
+#### Cook's distance
+
+```{r, fig.align="center"}
+dinf<-influence(m.random)
+highest<-max(dinf$inf$cook.d)
+plot(dinf$inf$cook.d, ylab = "Cook's distance", xlab = "ID", col=ifelse(dinf$inf$cook.d==highest, "red", "black"), pch=ifelse(dinf$inf$cook.d==highest, 19, 1), type = "b")
+axis(1, at=dinf$inf$slab, labels=dinf$inf$slab)
+```
+
+Note that study IDs follow alphabetical order of included studies and their specifications reported in the descriptive statistic's table
+
+```{r}
+ES_5 <- predict(m.random)$pred
+I2_5 <- m.random$I2
+tau_5 <- sqrt(m.random$tau2)
+CI_5 <- paste0("[",round((predict(m.random)$ci.lb), digits = 2),
+               ";",round((predict(m.random)$ci.ub), digits = 2),"]")
+PI_5 <- paste0("[",round((predict(m.random)$pi.lb), digits = 2),
+               ";",round((predict(m.random)$pi.ub), digits = 2),"]")
+```
+
+
+\newpage
+
+# Meta-analyses with r = .70
+
+```{r}
+df_agg<-MAd::agg(data=df, id=id, es=yi, var=vi, method = 'BHHR', cor = .70) 
+```
+
+## Dataset
+
+Effect sizes (Hedge's *g*) and varinaces for each of the included studies, with *r* = .70
+
+```{r}
+names(df_info)[names(df_info) == "Authors"] <-  "authors" 
+df_agg<-merge.data.frame(df_info[,c(1,2)], df_agg, by="id")
+kbl(df_agg, digits = 2, col.names = c("ID", "Authors", "Hedge's g", "Var")) %>%
+  kable_paper() %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
+```
+
+## Descriptive statistics
+
+```{r}
+info<- Reduce(function(x,y) merge(x,y,by="id",all=TRUE) ,list(df_agg[,-2],df_info))
+info<-info[,c("id","authors","country",
+              "c_n","c_m_f_ratio","c_age_range","c_age_m","c_age_sd",
+              "asd_n","asd_m_f_ratio","asd_age_range","asd_age_m","asd_age_sd",
+              "synch_type","es", "var")]
+df_agg<-info[,c(1,2,14,15,16)]
+
+names(info)[names(info) == "id"] <-  "ID"
+names(info)[names(info) == "authors"] <-  "Authors" 
+names(info)[names(info) == "country"] <-  "Country"
+names(info)[names(info) == "synch_type"] <-  "Type of Synchrony"
+names(info)[names(info) == "c_n"] <-  "N"
+names(info)[names(info) == "c_m_f_ratio"] <-  "M/F ratio" #td
+names(info)[names(info) == "c_age_range"] <-  "range" #td
+names(info)[names(info) == "c_age_m"] <-  "mean" #td
+names(info)[names(info) == "c_age_sd"] <-  "sd" #td
+names(info)[names(info) == "asd_n"] <-  "N" #asd
+names(info)[names(info) == "asd_m_f_ratio"] <-  "M/F ratio" #asd
+names(info)[names(info) == "asd_age_range"] <-  "range" #asd
+names(info)[names(info) == "asd_age_m"] <-  "mean" #asd
+names(info)[names(info) == "asd_age_sd"] <-  "sd" #asd
+names(info)[names(info) == "es"] <-  "Hedge's g" 
+
+
+kbl(info, digits = 2) %>%
+  kable_paper() %>%
+  add_header_above(c(" "= 3, " " = 2, "Age" = 3, " " = 2, "Age" = 3, " " = 3)) %>%
+  add_header_above(c(" " = 3, "TD Group" = 5, "ASD Group" = 5, " " = 3)) %>%
+  kableExtra::kable_styling(latex_options="scale_down") %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
+
+```
+
+
+## Random-effects meta-analysis
+
+### Models
+
+```{r, echo=TRUE}
+m.random <- rma(yi=es, vi=var, data=df_agg, method="REML")
+RE.results <- summary(m.random)
+print(RE.results)
+```
+
+ 
+```{r, echo=TRUE}
+#fit moderation model (type of synchrony)
+moderation.random <- rma(yi=es, vi=var, mods = ~ synch_type, data=df_agg, method="REML")
+summary(moderation.random)
+```
+
+### Forest plot
+
+Dotted line is the prediction interval
+
+```{r}
+forest(m.random, # combined effect size
+       annotate=TRUE,
+       df_agg$var, # variance of the composite hp .5
+       showweights=T,
+       header=T,
+       slab=df_agg$authors,
+       ilab=df_agg$synch_type,
+       ilab.xpos = -5,
+       ilab.pos = 4, 
+       cex=.75,
+       xlim=c(-10,11),
+       xlab="Hedge's g", 
+       addpred = TRUE)
+text(-3.8, 15, "SynchType", cex=.75, font=2)
+
+### add text with Q-value, dfs, p-value, and I^2 statistic
+text(-10, -1.8, pos=4, cex=0.70, 
+     bquote(paste("(Q = ", .(formatC(m.random$QE, digits=2, format="f")),
+     ", df = ", .(m.random$k - m.random$p),
+     ", p < .0001", "; ", 
+     I^2, " = ", .(formatC(m.random$I2, digits=2, format="f")), "%; ", 
+     tau, " = ", .(formatC(sqrt(m.random$tau2), digits=2, format="f")) , ")" )))
+```
+
+### Prediction interval
+
+```{r}
+predict(m.random)
+
+#metafor::predict.rma(m.random)
+```
+
+### Funnel plot (trim-and-fill method)
+
+```{r, fig.align="center"}
+### carry out trim-and-fill analysis
+taf<-trimfill(m.random,main="", 
+                ma.fixed = FALSE, fixed = FALSE, random = TRUE, label=F)
+
+### draw funnel plot with missing studies filled in
+funnel(taf, legend=TRUE, xlab="Hedge's g")
+```
+
+
+### Model corrected for publication bias (trim-and-fill method)
+```{r}
+summary(trimfill(m.random))
+```
+
+
+### Sensitivity analyses
+
+#### Leave-One-Out
+
+```{r}
+sens.random<-as.data.frame(leave1out(m.random))
+
+sens.random<-data.frame(df_agg$authors, format(round(sens.random[,],2),nsmal=2))
+sens.random$CI<-paste0("[",sens.random$ci.lb,";",sens.random$ci.ub,"]")
+sens.random$tau<-sqrt(as.numeric(sens.random$tau2))
+sens.random$tau2<-NULL
+sens.random<-sens.random[,c(1:2,10,13,12)]
+sens.random[,1]<-as.character(sens.random[,1])
+names(sens.random)[names(sens.random) == "df_agg.authors"] <- "Authors"
+names(sens.random)[names(sens.random) == "estimate"] <- "Estimate"
+
+
+
+# Compute prediction intervals using leave-one-out method
+
+PI.random <- data.frame(Authors = character(), 
+                            #CI = character(),  
+                            PI = character())
+
+for (j in 1:nrow(df_agg)) {
+    df_agg_l1o <- df_agg[-j, ]  # Remove one study from the dataset
+    
+    m.leave1out.random <- rma(yi = es, vi = var, data = df_agg_l1o, method = "REML")  # Run model
+    
+    predicted <- predict(m.leave1out.random, interval = "prediction")  # Compute prediction interval
+    
+    # conf_lb<-round(predicted$ci.lb, digits = 2)
+    # conf_ub<-round(predicted$ci.ub, digits = 2)
+    pred_lb<-round(predicted$pi.lb, digits = 2)
+    pred_ub<-round(predicted$pi.ub, digits = 2)
+  
+    
+    # Create a new row with results
+    new_row <- data.frame(Authors = df_agg$authors[j], 
+                          #CI = paste0("[",conf_lb,";",conf_ub,"]"), 
+                          PI = paste0("[",pred_lb,";",pred_ub,"]"))
+    
+    # Bind the new row to results_table
+    PI.random <- rbind(PI.random, new_row)
+}
+
+sens.random<-merge(sens.random, PI.random, by="Authors", all=TRUE)
+
+kbl(sens.random, digits = 2) %>%
+  kable_paper() %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
+```
+
+#### Cook's distance
+
+```{r, fig.align="center"}
+dinf<-influence(m.random)
+highest<-max(dinf$inf$cook.d)
+plot(dinf$inf$cook.d, ylab = "Cook's distance", xlab = "ID", col=ifelse(dinf$inf$cook.d==highest, "red", "black"), pch=ifelse(dinf$inf$cook.d==highest, 19, 1), type = "b")
+axis(1, at=dinf$inf$slab, labels=dinf$inf$slab)
+```
+
+
+Note that study IDs follow alphabetical order of included studies and their specifications reported in the descriptive statistic's table
+
+```{r}
+ES_7 <- predict(m.random)$pred
+I2_7 <- m.random$I2
+tau_7 <- sqrt(m.random$tau2)
+CI_7 <- paste0("[",round((predict(m.random)$ci.lb), digits = 2),
+               ";",round((predict(m.random)$ci.ub), digits = 2),"]")
+PI_7 <- paste0("[",round((predict(m.random)$pi.lb), digits = 2),
+               ";",round((predict(m.random)$pi.ub), digits = 2),"]")
+```
+
+
+# Comparing results 
+
+```{r}
+comparison <- data.frame(
+  Correlation = c("r = .30", "r = .50", "r = .70"),
+  ES = c(ES_3, ES_5, ES_7),
+  I2 = c(I2_3, I2_5, I2_7),
+  tau = c(tau_3, tau_5, tau_7),
+  CI = c(CI_3, CI_5, CI_7),
+  PI = c(PI_3, PI_5, PI_7)
+)
+
+kbl(comparison, digits = 2, caption = "Results of the three meta-analyses with different hypothesized correlations") %>%
+  kable_paper() %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
+```
+

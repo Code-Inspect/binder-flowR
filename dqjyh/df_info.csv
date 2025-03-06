@@ -1,0 +1,14 @@
+﻿id,authors,country,c_n,c_m_f_ratio,c_age_range,c_age_m,c_age_sd,asd_n,asd_m_f_ratio,asd_age_range,asd_age_m,asd_age_sd,synch_type
+1,"Brezis et al., 2017",Israel,35,28:7,19 - 45,25.9,6.37,34,31:3,20 - 45,28.6,6.26,instructed
+2,"Fitzpatrick et al., 2013",USA,3,1:2,4 - 5.6,4.8,0.75,5,4:1,5 - 7.4,6.21,1.17,instructed
+3,"Fitzpatrick et al., 2017",USA,27,21:6,6.33 - 10.8,8.24,1.46,23,20:3,6.08 - 10.75,8.08,1.44,instructed
+4,"Fitzpatrick et al., 2016",USA,9,7:2,12 - 16,14.44,1.13,9,8:1,12 - 17,13.67,1.94,instructed
+5,"Fulceri et al., 2018",Italy,11,9:2,6.3 - 9.8,7.57,0.71,11,10:1,5.11 - 10.3,7.82,1.32,spontaneous
+6,"Georgescu et al., 2020",Germany,10,6:4,33 - 51,41.8,8.86,9,5:4,30 - 50,40.72,10.45,spontaneous
+7,"Kawasaki et al., 2017",USA,24,12:12,18.9 - 32.1,25.6,6.6,24,14:10,22 - 36.4,29.2,7.2,instructed
+8,"Kruppa et al., 2021",Germany,41,18:23,8 - 18,12.66,2.79,18,18:0,8 - 18,13.54,2.96,instructed
+9,"Lampi et al., 2020",USA,47,34:13,6 - 10,7.85,1.49,50,34:7,6 - 10,8.02,1.44,spontaneous
+10,"Liu et al., 2021",USA,16,10:6,1.66 - 4.33,2.99,0.7,13,10:3,1.75 - 5.75,3.88,0.85,spontaneous
+11,"Marsh et al., 2013",USA,7,4:3,2.8 - 4.6,3.75,0.12,7,5:2,3.8 - 4.1,3.94,0.74,spontaneous
+12,"Noel et al., 2018",USA,15,11:4,8.9 - 14.5,10.94,2.13,12,8:4,7.9 - 16.5,12.2,3.75,spontaneous
+13,"Yoo et al., 2018",Korea,42,23:19,11 - 16,13.5,0.8,10,10:0,11 - 16,13.4,1.4,spontaneous
