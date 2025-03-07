@@ -30,7 +30,12 @@ We utilize **[flowR](https://github.com/flowr-analysis/flowr)** to extract depen
 These dependencies are crucial for ensuring reproducibility, and they are used to generate **DESCRIPTION** and **install.R** files, which are necessary for Binder.
 
 ### 3. Setting Up Binder
-To make flowR available inside the Binder environment, we include a `postBuild` script that ensures flowR is installed when launching the RStudio session:
+
+To make flowR available inside the Binder environment, we integrate it using two key components:
+
+#### postBuild
+
+The postBuild script ensures that flowR is installed when launching the RStudio session:
 ```bash
 #!/bin/bash
 # Install remotes package in R
@@ -39,8 +44,13 @@ R -e "install.packages('remotes')"
 # Install FlowR from GitHub using remotes
 R -e "remotes::install_github('flowr-analysis/rstudio-addin-flowr')"
 ```
-This ensures that all flowR features are available to users when they launch the project in RStudio via Binder.
 
+#### .Rprofile
+
+To automatically set up the flowR RStudio add-in, we include the following in .Rprofile:
+```r
+rstudioaddinflowr:::install_node_addin()
+```
 ### 4. Creating a Docker Image for Reproducibility
 The project is containerized using [GESIS Notebooks Binder](https://notebooks.gesis.org/binder/) to enable execution directly from a web browser. This allows researchers to:
 - Browse the OSF project’s code
