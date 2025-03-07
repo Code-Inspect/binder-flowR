@@ -73,5 +73,5 @@ By leveraging Binder, we facilitate a **one-click launch** of the OSF project, m
 
 ---
 
-By integrating **OSF**, **flowR**, and **Binder**, we aim to enhance transparency and reproducibility in computational social science and beyond. This repository serves as an example of how research projects can be packaged and shared in a fully executable, browser-based environment. 🎯
+By integrating **OSF**, **flowR**, and **Binder**, we aim to enhance transparency and reproducibility in computational social science and beyond. This repository serves as an example of how research projects can be packaged and shared in a fully executable, browser-based environment. 
 
