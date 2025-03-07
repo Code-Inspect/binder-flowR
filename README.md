@@ -65,7 +65,6 @@ Instead of using GESIS Binder, you can manually build the Docker image using `re
 2. Clone this repository:
    ```bash
    git clone https://github.com/lorraine-dev/binder-flowR.git
-   cd dqjyh
    ```
 3. Build and launch the container using:
    ```bash
