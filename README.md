@@ -27,7 +27,7 @@ We utilize **[flowR](https://github.com/flowr-analysis/flowr)** to extract depen
 - Recognizes **R scripts** that are sourced
 - Lists the **output files** generated
 
-These dependencies are crucial for ensuring reproducibility, and they are used to generate a **DESCRIPTION** file, which is necessary for Binder.
+These dependencies are crucial for ensuring reproducibility, and they are used to generate **DESCRIPTION** and **install.R** files, which are necessary for Binder.
 
 ### 3. Setting Up Binder
 To make flowR available inside the Binder environment, we include a `postBuild` script that ensures flowR is installed when launching the RStudio session:
