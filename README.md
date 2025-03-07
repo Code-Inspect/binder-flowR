@@ -38,9 +38,6 @@ R -e "install.packages('remotes')"
 
 # Install FlowR from GitHub using remotes
 R -e "remotes::install_github('flowr-analysis/rstudio-addin-flowr')"
-
-# Run the additional installation step for FlowR
-R -e "rstudioaddinflowr:::install_node_addin()"
 ```
 This ensures that all flowR features are available to users when they launch the project in RStudio via Binder.
 
