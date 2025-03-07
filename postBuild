@@ -5,3 +5,5 @@ R -e "install.packages('remotes')"
 # Install FlowR from GitHub using remotes
 R -e "remotes::install_github('flowr-analysis/rstudio-addin-flowr')"
 
+# Run the additional installation step for FlowR
+R -e "rstudioaddinflowr:::install_node_addin()"
