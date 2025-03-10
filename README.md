@@ -1,6 +1,6 @@
 # binder + flowR
 
-This repository demonstrates how a project from OSF can be containerized and tested using Binder. We facilitate a one-click launch of the OSF project, allowing anyone to browse, execute the code, and verify or compare the results from the associated research paper. This aligns with the objectives of the **CodeInspector project (DFG funding D6130)**, where we aim to enable **browser-based reproducibility and evaluation of open science projects**
+This repository demonstrates how a project from OSF can be containerized and tested using Binder. We facilitate a one-click launch of the OSF project, allowing anyone to browse, execute the code, and verify or compare the results from the associated research paper. This aligns with the objectives of the **CodeInspector project**, where we aim to enable **browser-based reproducibility and evaluation of open science projects**
 
 ## How It Works
 
@@ -72,7 +72,7 @@ Instead of using GESIS Binder, you can manually build the Docker image using `re
    ```
 
 ## One-Click Reproducibility
-By leveraging Binder, we facilitate a **one-click launch** of the OSF project, making it accessible for anyone to explore, execute, and verify the analysis. This contributes to the broader goals of **browser-based reproducibility** and **evaluation of open science projects**, as pursued under the **CodeInspector project (DFG funding D6130).**
+By leveraging Binder, we facilitate a **one-click launch** of the OSF project, making it accessible for anyone to explore, execute, and verify the analysis. This contributes to the broader goals of **browser-based reproducibility** and **evaluation of open science projects**, as pursued under the **CodeInspector project.**
 
 🚀 **Click below to launch the project in Binder:**  
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lorraine-dev/binder-flowR/HEAD?urlpath=rstudio)
@@ -81,3 +81,7 @@ By leveraging Binder, we facilitate a **one-click launch** of the OSF project, m
 
 By integrating **OSF**, **flowR**, and **Binder**, we aim to enhance transparency and reproducibility in computational social science and beyond. This repository serves as an example of how research projects can be packaged and shared in a fully executable, browser-based environment. 
 
+
+---
+
+This work was funded by the German Research Foundation (DFG) under project No. 504226141.
