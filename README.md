@@ -64,11 +64,11 @@ Instead of using GESIS Binder, you can manually build the Docker image using `re
 1. Install `repo2docker` by following the guide [here](https://repo2docker.readthedocs.io/en/latest/install.html).
 2. Clone this repository:
    ```bash
-   git clone https://github.com/lorraine-dev/binder-flowR.git
+   git clone https://github.com/Code-Inspect/binder-flowR.git
    ```
 3. Build and launch the container using:
    ```bash
-   jupyter-repo2docker https://github.com/lorraine-dev/binder-flowR
+   jupyter-repo2docker https://github.com/Code-Inspect/binder-flowR
    ```
 
 ## One-Click Reproducibility
