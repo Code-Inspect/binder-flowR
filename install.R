@@ -1,9 +1,0 @@
-install.packages(c(
-    "MAd",
-    "PRISMA2020",
-    "dplyr",
-    "kableExtra",
-    "metafor",
-    "readr",
-    "tidyr"
-))
