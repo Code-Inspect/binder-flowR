@@ -56,7 +56,7 @@ The project is containerized using [My Binder](https://mybinder.org) to enable e
 - Compare results with the original paper
 
 #### Alternative: Using repo2docker
-Instead of using GESIS Binder, you can manually build the Docker image using `repo2docker`:
+Instead of using MyBinder, you can manually build the Docker image using `repo2docker`:
 
 #### Steps to Build and Run the Image
 1. Install `repo2docker` by following the guide [here](https://repo2docker.readthedocs.io/en/latest/install.html).
