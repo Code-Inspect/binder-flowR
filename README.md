@@ -75,10 +75,10 @@ Instead of using GESIS Binder, you can manually build the Docker image using `re
 By leveraging Binder, we facilitate a **one-click launch** of the OSF project, making it accessible for anyone to explore, execute, and verify the analysis. This contributes to the broader goals of **browser-based reproducibility** and **evaluation of open science projects**, as pursued under the **CodeInspector project.**
 
 🚀 **Click below to launch the project on MyBinder:**  
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lorraine-dev/binder-flowR/HEAD?urlpath=rstudio)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Code-Inspect/binder-flowR/HEAD?urlpath=rstudio)
 
 🚀 **Click below to launch the project on the NFDI JupyterHub:**  
-[![NFDI](https://nfdi-jupyter.de/images/nfdi_badge.svg)](https://hub.nfdi-jupyter.de/r2d/gh/lorraine-dev/binder-flowR/HEAD?urlpath=rstudio)
+[![NFDI](https://nfdi-jupyter.de/images/nfdi_badge.svg)](https://hub.nfdi-jupyter.de/r2d/gh/Code-Inspect/binder-flowR/HEAD?urlpath=rstudio)
 
 ---
 
