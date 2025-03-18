@@ -52,7 +52,7 @@ To automatically set up the flowR RStudio add-in, we include the following in .R
 rstudioaddinflowr:::install_node_addin()
 ```
 ### 4. Creating a Docker Image for Reproducibility
-The project is containerized using [GESIS Notebooks Binder](https://notebooks.gesis.org/binder/) to enable execution directly from a web browser. This allows researchers to:
+The project is containerized using [My Binder](https://mybinder.org) to enable execution directly from a web browser. This allows researchers to:
 - Browse the OSF project’s code
 - Execute the analysis
 - Compare results with the original paper
@@ -74,10 +74,10 @@ Instead of using GESIS Binder, you can manually build the Docker image using `re
 ## One-Click Reproducibility
 By leveraging Binder, we facilitate a **one-click launch** of the OSF project, making it accessible for anyone to explore, execute, and verify the analysis. This contributes to the broader goals of **browser-based reproducibility** and **evaluation of open science projects**, as pursued under the **CodeInspector project.**
 
-🚀 **Click below to launch the project in Binder:**  
+🚀 **Click below to launch the project on MyBinder:**  
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lorraine-dev/binder-flowR/HEAD?urlpath=rstudio)
 
-🚀 **Click below to launch the project in the NFDI JupyterHub:**  
+🚀 **Click below to launch the project on the NFDI JupyterHub:**  
 [![NFDI](https://nfdi-jupyter.de/images/nfdi_badge.svg)](https://hub.nfdi-jupyter.de/r2d/gh/lorraine-dev/binder-flowR/HEAD?urlpath=rstudio)
 
 ---
