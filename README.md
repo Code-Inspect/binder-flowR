@@ -5,10 +5,8 @@ This repository demonstrates how a project from OSF can be containerized and tes
 ## How It Works
 
 ### 1. Downloading the OSF Project
-We use the **OSF API** to retrieve a project hosted on OSF. This is done using the Python package `osfclient`:
-```python
-from osfclient.api import OSF
-```
+We use the **OSF API** to retrieve a project hosted on OSF. This is done using the Python package `osfclient`.
+
 For demonstration purposes, we use the following OSF-hosted project:
 
 > **Carnevali, L., Valori, I., Altoè, G., & Farroni, T. (2024, January 23).**
