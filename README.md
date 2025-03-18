@@ -27,7 +27,7 @@ We utilize **[flowR](https://github.com/flowr-analysis/flowr)** to extract depen
 - Recognizes **R scripts** that are sourced
 - Lists the **output files** generated
 
-These dependencies are crucial for ensuring reproducibility, and they are used to generate **DESCRIPTION** and **install.R** files, which are necessary for Binder.
+These dependencies are crucial for ensuring reproducibility, and they are used to generate **install.R** file, which is necessary for Binder.
 
 ### 3. Setting Up Binder
 
