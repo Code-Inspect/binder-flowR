@@ -1,6 +1,6 @@
 #!/bin/bash
 # Install remotes package in R
-R -e "install.packages('remotes')"
+R -e "install.packages('remotes'); if (packageVersion('remotes') < '2.5.0') remotes::install_version('remotes', version = '2.5.0', repos = 'https://cloud.r-project.org')"
 
 # Install FlowR from GitHub using remotes
 R -e "remotes::install_github('flowr-analysis/rstudio-addin-flowr')"
