@@ -77,6 +77,9 @@ By leveraging Binder, we facilitate a **one-click launch** of the OSF project, m
 🚀 **Click below to launch the project in Binder:**  
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lorraine-dev/binder-flowR/HEAD?urlpath=rstudio)
 
+🚀 **Click below to launch the project in the NFDI JupyterHub:**  
+[![NFDI](https://nfdi-jupyter.de/images/nfdi_badge.svg)](https://hub.nfdi-jupyter.de/r2d/gh/lorraine-dev/binder-flowR/HEAD?urlpath=rstudio)
+
 ---
 
 By integrating **OSF**, **flowR**, and **Binder**, we aim to enhance transparency and reproducibility in computational social science and beyond. This repository serves as an example of how research projects can be packaged and shared in a fully executable, browser-based environment. 
