@@ -82,8 +82,12 @@ By leveraging Binder, we facilitate a **one-click launch** of the OSF project, m
 
 ---
 
-By integrating **OSF**, **flowR**, and **Binder**, we aim to enhance transparency and reproducibility in computational social science and beyond. This repository serves as an example of how research projects can be packaged and shared in a fully executable, browser-based environment. 
+## Example Usage
+<img src="./assets/demo.gif" width="100%">
+The GIF demonstrates launching the project on MyBinder with flowR installed. The user opens an R script, selects a variable for analysis using the flowR RStudio add-in, and applies the "flowR: Reconstruct for Cursor Position" feature. This reduces the script to only the lines relevant to the selected variable, providing a streamlined view. This process, known as program slicing, helps simplify code by retaining only the parts necessary for computing a specific point of interest, such as a plot visualization.
 
+---
+By integrating **OSF**, **flowR**, and **Binder**, we aim to enhance transparency and reproducibility in computational social science and beyond. This repository serves as an example of how research projects can be packaged and shared in a fully executable, browser-based environment.
 
 ---
 
