@@ -15,6 +15,8 @@ For demonstration purposes, we use the following OSF-hosted project:
 
 This project is downloaded to a folder named after its **OSF project ID**, which in this case is `dqjyh`.
 
+---
+
 ### 2. Extracting Dependencies Using flowR
 We utilize **[flowR](https://github.com/flowr-analysis/flowr)** to extract dependencies from the **R files** contained in the OSF project.
 
