@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it using the following metadata."
+title: "binder-flowR: Reproducible OSF Project Execution with Binder and flowR"
+authors:
+  - family-names: "Saju"
+    given-names: "Lorraine"
+
+date-released: "2024-01-23"
+version: "1.0.0"
+doi: "10.5281/zenodo.XXXXXXX"  # Replace with actual DOI when available
+repository-code: "https://github.com/Code-Inspect/binder-flowR"
+license: "CC0 1.0 Universal"
+abstract: >-
+  This repository demonstrates how to containerize and execute OSF projects using Binder,
+  enabling browser-based reproducibility. It integrates flowR for dependency extraction,
+  automates setup through RStudio configurations, and provides a one-click launch to
+  MyBinder and NFDI JupyterHub, supporting open science and computational reproducibility.
+
+keywords:
+  - Reproducibility
+  - Open Science
+  - OSF
+  - Binder
+  - Jupyter4NFDI
+  - R
+  - flowR
+
