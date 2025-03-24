@@ -8,6 +8,7 @@ authors:
 
 date-released: "2024-03-24"
 version: "1.0.4"
+doi: "10.5281/zenodo.15078687"
 repository-code: "https://github.com/Code-Inspect/binder-flowR"
 license: "CC0-1.0"
 abstract: >-
