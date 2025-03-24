@@ -1,5 +1,7 @@
 # binder + flowR
 
+[![DOI](https://zenodo.org/badge/944007149.svg)](https://doi.org/10.5281/zenodo.15078678)
+
 This repository demonstrates how a project from OSF can be containerized and tested using Binder. We facilitate a one-click launch of the OSF project, allowing anyone to browse, execute the code, and verify or compare the results from the associated research paper. This aligns with the objectives of the **CodeInspector project**, where we aim to enable **browser-based reproducibility and evaluation of open science projects**.
 
 ## How It Works
