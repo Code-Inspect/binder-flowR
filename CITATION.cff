@@ -6,8 +6,8 @@ authors:
     given-names: "Lorraine"
     orcid: "https://orcid.org/0009-0003-3168-9672"
 
-date-released: "2024-03-19"
-version: "1.0.0"
+date-released: "2024-03-24"
+version: "1.0.4"
 repository-code: "https://github.com/Code-Inspect/binder-flowR"
 license: "CC0-1.0"
 abstract: >-
