@@ -8,9 +8,8 @@ authors:
 
 date-released: "2024-03-19"
 version: "1.0.0"
-doi: "10.5281/zenodo.XXXXXXX"  # Replace with actual DOI when available
 repository-code: "https://github.com/Code-Inspect/binder-flowR"
-license: "CC0 1.0 Universal"
+license: "CC0-1.0"
 abstract: >-
   This repository demonstrates how to containerize and execute OSF projects using Binder,
   enabling browser-based reproducibility. It integrates flowR for dependency extraction,
