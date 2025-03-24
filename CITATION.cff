@@ -4,6 +4,7 @@ title: "binder-flowR: Reproducible OSF Project Execution with Binder and flowR"
 authors:
   - family-names: "Saju"
     given-names: "Lorraine"
+    orcid: "https://orcid.org/0009-0003-3168-9672"
 
 date-released: "2024-03-19"
 version: "1.0.0"
