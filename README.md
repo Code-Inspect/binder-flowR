@@ -44,7 +44,8 @@ The postBuild script ensures that flowR is installed when launching the RStudio 
 R -e "install.packages('remotes')"
 
 # Install FlowR from GitHub using remotes
-R -e "remotes::install_github('flowr-analysis/rstudio-addin-flowr')"
+R -e "remotes::install_github('flowr-analysis/rstudio-addin-flowr@v0.1.2')"
+
 ```
 
 #### .Rprofile
