@@ -1,9 +1,8 @@
 #!/bin/bash
-
 echo "Installing FlowR addin..."
 
-# Ensure remotes is installed
-Rscript -e "if (!requireNamespace('remotes', quietly = TRUE)) install.packages('remotes', repos='https://cloud.r-project.org')"
+# Ensure remotes is installed first
+Rscript -e "install.packages('remotes', repos = 'https://cloud.r-project.org')"
 
-# Install FlowR addin from GitHub at a specific tag
+# Install FlowR addin from GitHub tag
 Rscript -e "remotes::install_github('flowr-analysis/rstudio-addin-flowr@v0.1.2')"
